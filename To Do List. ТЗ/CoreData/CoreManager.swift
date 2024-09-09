@@ -54,6 +54,7 @@ class CoreManager {
         task.id = Int32(Date().timeIntervalSince1970)
         task.todo = todo
         task.category = category
+        task.completed = false
         task.date = date
         task.creationDate = Date()
         
@@ -70,7 +71,6 @@ class CoreManager {
         do {
             let existingTasks = try context.fetch(fetchRequest)
             
-            // Создаем словарь для быстрого поиска существующих задач по id
             var existingTasksDict = [Int32: Tasks]()
             for task in existingTasks {
                 existingTasksDict[task.id] = task
@@ -78,13 +78,13 @@ class CoreManager {
             
             for item in items {
                 if let existingTask = existingTasksDict[Int32(item.id)] {
-                    // Обновляем существующую задачу
+
                     existingTask.todo = item.todo
                     existingTask.category = item.category
                     existingTask.date = item.dateComplete
                     existingTask.userId = Int32(item.userId)
                 } else {
-                    // Добавляем новую задачу
+    
                     let newTask = Tasks(context: context)
                     newTask.id = Int32(item.id)
                     newTask.todo = item.todo
@@ -97,8 +97,10 @@ class CoreManager {
             
             try context.save()
         } catch {
-            print("Failed to fetch or save tasks: \(error)")
+            print("error \(error)")
         }
     }
+    
+
 }
 

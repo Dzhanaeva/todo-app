@@ -17,7 +17,6 @@ protocol TodoListRouterProtocol: AnyObject {
 class ToDoListRouter: TodoListRouterProtocol {
     
     weak var viewController: UIViewController?
-
     var button: UIButton!
     
     func navigateToAddTask() {

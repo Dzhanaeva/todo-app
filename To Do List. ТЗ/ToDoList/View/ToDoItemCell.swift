@@ -39,7 +39,6 @@ class ToDoItemCell: UICollectionViewCell {
     
     lazy var separator: UIView = {
         $0.backgroundColor = .systemGray6
-        $0.heightAnchor.constraint(equalToConstant: 1).isActive = true
         $0.translatesAutoresizingMaskIntoConstraints = false
         return $0
     }(UIView())
@@ -99,28 +98,56 @@ class ToDoItemCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
-        contentView.addSubviews(verticalStackView)
-        
+        setupDependencies()
+        setupViews()
+        setupConstraints()
+        setupInteractions()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    
+    private func setupDependencies() {
         let router = ToDoListRouter()
         let presenter = ToDoListPresenter()
         
         self.router = router
         self.presenter = presenter
-    
+        
         presenter.router = router
         router.button = checkmark
-        setupViews()
-        setupConstrints()
+    }
+    
+    private func setupViews() {
+        contentView.addSubview(verticalStackView)
         
-        let interaction = UIContextMenuInteraction(delegate: self)
-        contentView.addInteraction(interaction)
-        
+        contentView.layer.cornerRadius = 20
+        contentView.layer.shadowColor = UIColor.black.cgColor
+        contentView.layer.shadowOpacity = 0.1
+        contentView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        contentView.layer.shadowRadius = 4
+        contentView.backgroundColor = .white
 
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    private func setupConstraints() {
+        NSLayoutConstraint.activate([
+            verticalStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            verticalStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
+            verticalStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            verticalStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
+            
+            checkmark.widthAnchor.constraint(equalToConstant: 40),
+            checkmark.heightAnchor.constraint(equalToConstant: 40),
+            separator.heightAnchor.constraint(equalToConstant: 1)
+        ])
+    }
+    
+    private func setupInteractions() {
+        let interaction = UIContextMenuInteraction(delegate: self)
+        contentView.addInteraction(interaction)
     }
     
     private func attributedText(for text: String, isCompleted: Bool) -> NSAttributedString {
@@ -133,39 +160,22 @@ class ToDoItemCell: UICollectionViewCell {
         return NSAttributedString(string: text, attributes: attributes)
     }
     
-    func setupViews() {
-        contentView.layer.cornerRadius = 20
-          contentView.layer.shadowColor = UIColor.black.cgColor
-          contentView.layer.shadowOpacity = 0.1
-          contentView.layer.shadowOffset = CGSize(width: 0, height: 2)
-          contentView.layer.shadowRadius = 4
-          contentView.backgroundColor = .white
-        contentView.layer.shouldRasterize = true
-        contentView.layer.rasterizationScale = UIScreen.main.scale
-
-
-    }
-    
-    func setupConstrints() {
-        NSLayoutConstraint.activate([
-            
-            
-            verticalStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            verticalStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
-            verticalStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            verticalStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
-            
-            checkmark.widthAnchor.constraint(equalToConstant: 40),
-            checkmark.heightAnchor.constraint(equalToConstant: 40),
-        ])
-        
-
-    }
     
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+
+        
         setNeedsLayout()
         layoutIfNeeded()
-        let size = contentView.systemLayoutSizeFitting(layoutAttributes.size)
+        
+        let targetSize = CGSize(width: layoutAttributes.frame.width, height: UIView.layoutFittingCompressedSize.height)
+        var size = contentView.systemLayoutSizeFitting(targetSize, withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
+        
+        if size.height.isNaN {
+            print("Error: Calculated height is NaN")
+            size.height = 100 // Возвращаем значение по умолчанию
+        }
+        
+        
         var frame = layoutAttributes.frame
         frame.size.height = ceil(size.height)
         layoutAttributes.frame = frame

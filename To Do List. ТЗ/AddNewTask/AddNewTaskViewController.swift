@@ -23,9 +23,14 @@ class AddNewTaskViewController: UIViewController, AddNewTaskViewControllerProtoc
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
-        title = "Task"
-        
+        setupDependencies()
+        setupUI()
+        setupConstraints()
+        setupNotifications()
+        showTask()
+    }
+    
+    private func setupDependencies() {
         let router = AddNewTaskRouter()
         let presenter = AddNewTaskPresenter()
         let interactor = AddNewTaskInteractor()
@@ -40,21 +45,45 @@ class AddNewTaskViewController: UIViewController, AddNewTaskViewControllerProtoc
         router.viewController = self
         interactor.task = task
         presenter.viewDidLoad()
+    }
+    
+    
+    private func setupUI() {
+        view.backgroundColor = .white
+        title = "Task"
         
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(textViewDidChange), name: UITextView.textDidChangeNotification, object: nil)
         view.addSubviews(tasksContainerView, categoryContainerView, viewDate, saveBtn)
-        setupConstraints()
-        showTask()
-        
         
         dateWhenComplete.addTarget(self, action: #selector(dateChanged), for: .valueChanged)
-        
     }
     
     @objc func dateChanged() {
         isDateSelected = true
     }
+    
+    private func setupNotifications() {
+        NotificationCenter.default.addObserver(self, selector: #selector(textViewDidChange), name: UITextView.textDidChangeNotification, object: nil)
+    }
+    
+    @objc func saveTask() {
+        let selectedDate: Date? = isDateSelected ? dateWhenComplete.date : nil
+        presenter.saveTask(todo: tasksTextView.text, category: categoryTextField.text, date: selectedDate)
+    }
+    
+    func showTask() {
+        if let task = task {
+            tasksTextView.text = task.todo
+            categoryTextField.text = task.category
+            if let date = task.date {
+                dateWhenComplete.date = date
+                isDateSelected = true
+            }
+
+            tasksPlaceholderLabel.isHidden = !tasksTextView.text.isEmpty
+        }
+    }
+    
+    //MARK: - UI Elements
     
     lazy var categoryTextField: UITextField = {
         let textField = UITextField()
@@ -107,7 +136,6 @@ class AddNewTaskViewController: UIViewController, AddNewTaskViewControllerProtoc
         }
     }
     
-    
     lazy var viewDate: UIView = {
         $0.translatesAutoresizingMaskIntoConstraints = false
         $0.backgroundColor = .clear
@@ -119,6 +147,7 @@ class AddNewTaskViewController: UIViewController, AddNewTaskViewControllerProtoc
         let datePicker = UIDatePicker()
         datePicker.datePickerMode = .time
         datePicker.preferredDatePickerStyle = .wheels
+        datePicker.translatesAutoresizingMaskIntoConstraints = false
         return datePicker
     }()
     
@@ -134,27 +163,10 @@ class AddNewTaskViewController: UIViewController, AddNewTaskViewControllerProtoc
         return $0
     }(UIButton(type: .system))
     
-    
-    @objc func saveTask() {
-        let selectedDate: Date? = isDateSelected ? dateWhenComplete.date : nil
-        presenter.saveTask(todo: tasksTextView.text, category: categoryTextField.text, date: selectedDate)
-    }
-    
-    func showTask() {
-        if let task = task {
-            tasksTextView.text = task.todo
-            categoryTextField.text = task.category
-            if let date = task.date {
-                dateWhenComplete.date = date
-                isDateSelected = true
-            }
-            tasksPlaceholderLabel.isHidden = !tasksTextView.text.isEmpty
-        }
-    }
-
+//MARK: - Constraints
         
-        func setupConstraints() {
-            NSLayoutConstraint.activate([
+    func setupConstraints() {
+        NSLayoutConstraint.activate([
                 
                 tasksContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
                 tasksContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
@@ -181,6 +193,7 @@ class AddNewTaskViewController: UIViewController, AddNewTaskViewControllerProtoc
                 
                 viewDate.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
                 viewDate.topAnchor.constraint(equalTo: categoryContainerView.bottomAnchor, constant: 5),
+                viewDate.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
                 
                 dateWhenComplete.leadingAnchor.constraint(equalTo: viewDate.leadingAnchor),
                 dateWhenComplete.trailingAnchor.constraint(equalTo: viewDate.trailingAnchor),

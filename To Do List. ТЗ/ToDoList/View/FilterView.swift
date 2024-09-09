@@ -29,23 +29,16 @@ class FilterView: UIView {
         view.heightAnchor.constraint(equalToConstant: 20).isActive = true
         view.widthAnchor.constraint(equalToConstant: 2).isActive = true
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.preservesSuperviewLayoutMargins = true
-        view.layoutMargins = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
-        
+
         return view
     }()
     
-    private var leftSpacer: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
+    enum TaskFilter {
+        case all
+        case open
+        case closed
+    }
     
-    private var rightSpacer: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
     
     var allCount: Int = 0 {
         didSet {
@@ -72,24 +65,22 @@ class FilterView: UIView {
         }
     }
     
-    enum TaskFilter {
-        case all
-        case open
-        case closed
-    }
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupView()
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    
 
+    
     private func setupView() {
+        setupStackViews()
+        setupConstraints()
+        setupActions()
+        updateButtonSelection()
+    }
+
+    private func setupStackViews() {
         tabStackView.axis = .horizontal
         tabStackView.distribution = .equalSpacing
         tabStackView.alignment = .center
@@ -110,24 +101,24 @@ class FilterView: UIView {
         stackViewTwo.addArrangedSubview(openButton)
         stackViewTwo.addArrangedSubview(closedButton)
         
-        
         tabStackView.addArrangedSubview(stackViewOne)
         tabStackView.addArrangedSubview(stackViewTwo)
         
         addSubview(tabStackView)
-
-        
+    }
+    
+    private func setupConstraints() {
         NSLayoutConstraint.activate([
             tabStackView.leadingAnchor.constraint(equalTo: leadingAnchor),
             tabStackView.topAnchor.constraint(equalTo: topAnchor),
             tabStackView.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
-        
+    }
+    
+    private func setupActions() {
         allButton.addTarget(self, action: #selector(allButtonTapped), for: .touchUpInside)
         openButton.addTarget(self, action: #selector(openButtonTapped), for: .touchUpInside)
         closedButton.addTarget(self, action: #selector(closedButtonTapped), for: .touchUpInside)
-        
-        updateButtonSelection()
     }
     
     @objc private func allButtonTapped() {
@@ -147,6 +138,10 @@ class FilterView: UIView {
         openButton.isSelected = (selectedFilter == .open)
         closedButton.isSelected = (selectedFilter == .closed)
     }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 }
 
 class FilterButton: UIButton {
@@ -156,25 +151,31 @@ class FilterButton: UIButton {
     var badgeCount: Int = 0 {
         didSet {
             badgeLabel.text = "\(badgeCount)"
-            badgeLabel.isHidden = (badgeCount == 0)
+
         }
     }
     
     init(title: String) {
         super.init(frame: .zero)
+        setupButton(title: title)
+        setupBadgeLabel()
+    }
+    
+    private func setupButton(title: String) {
         setTitle(title, for: .normal)
         setTitleColor(.lightGray, for: .normal)
         setTitleColor(.customBlue, for: .selected)
         titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         translatesAutoresizingMaskIntoConstraints = false
-        
+    }
+    
+    private func setupBadgeLabel() {
         badgeLabel.font = UIFont.systemFont(ofSize: 14)
         badgeLabel.textColor = .white
         badgeLabel.textAlignment = .center
         badgeLabel.layer.cornerRadius = 10
         badgeLabel.layer.masksToBounds = true
         badgeLabel.translatesAutoresizingMaskIntoConstraints = false
-        
         addSubview(badgeLabel)
         
         NSLayoutConstraint.activate([
@@ -185,13 +186,15 @@ class FilterButton: UIButton {
         ])
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
+
     override var isSelected: Bool {
         didSet {
             badgeLabel.backgroundColor = isSelected ? .customBlue : .tintGray
         }
     }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
 }

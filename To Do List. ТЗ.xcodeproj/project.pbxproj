@@ -26,7 +26,7 @@
 		11BF1E362C8F188A00032B50 /* AddNewTaskPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF1E352C8F188A00032B50 /* AddNewTaskPresenter.swift */; };
 		11BF1E382C8F18DA00032B50 /* AddNewTaskInterator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF1E372C8F18DA00032B50 /* AddNewTaskInterator.swift */; };
 		11BF1E3A2C8F1C0100032B50 /* AddNewTaskRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF1E392C8F1C0100032B50 /* AddNewTaskRouter.swift */; };
-		11BF1E3C2C8F255300032B50 /* TaskTabsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF1E3B2C8F255300032B50 /* TaskTabsView.swift */; };
+		11BF1E3C2C8F255300032B50 /* FilterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11BF1E3B2C8F255300032B50 /* FilterView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,7 +51,7 @@
 		11BF1E352C8F188A00032B50 /* AddNewTaskPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewTaskPresenter.swift; sourceTree = "<group>"; };
 		11BF1E372C8F18DA00032B50 /* AddNewTaskInterator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewTaskInterator.swift; sourceTree = "<group>"; };
 		11BF1E392C8F1C0100032B50 /* AddNewTaskRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewTaskRouter.swift; sourceTree = "<group>"; };
-		11BF1E3B2C8F255300032B50 /* TaskTabsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskTabsView.swift; sourceTree = "<group>"; };
+		11BF1E3B2C8F255300032B50 /* FilterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,13 +85,10 @@
 			isa = PBXGroup;
 			children = (
 				1180113C2C89E74F00D5376B /* CoreData */,
-				1180112E2C877F2B00D5376B /* ViewController */,
+				11BF1E3D2C8F643700032B50 /* ToDoList */,
+				1180112E2C877F2B00D5376B /* AddNewTask */,
 				1180110A2C872C0100D5376B /* AppDelegate.swift */,
 				1180110C2C872C0100D5376B /* SceneDelegate.swift */,
-				118011262C87329600D5376B /* ToDoListInteractor.swift */,
-				118011222C87323E00D5376B /* ToDoListPresenter.swift */,
-				1180112A2C87357900D5376B /* ToDoEntity.swift */,
-				118011282C8733AA00D5376B /* ToDoListRouter.swift */,
 				1180112C2C8738BE00D5376B /* Extensions.swift */,
 				118011162C872C0400D5376B /* Assets.xcassets */,
 				118011182C872C0400D5376B /* LaunchScreen.storyboard */,
@@ -101,18 +98,15 @@
 			path = "To Do List. ТЗ";
 			sourceTree = "<group>";
 		};
-		1180112E2C877F2B00D5376B /* ViewController */ = {
+		1180112E2C877F2B00D5376B /* AddNewTask */ = {
 			isa = PBXGroup;
 			children = (
-				1180110E2C872C0100D5376B /* ToDoListVC.swift */,
-				118011312C87996B00D5376B /* ToDoItemCell.swift */,
 				118011342C88B52C00D5376B /* AddNewTaskViewController.swift */,
 				11BF1E352C8F188A00032B50 /* AddNewTaskPresenter.swift */,
 				11BF1E372C8F18DA00032B50 /* AddNewTaskInterator.swift */,
 				11BF1E392C8F1C0100032B50 /* AddNewTaskRouter.swift */,
-				11BF1E3B2C8F255300032B50 /* TaskTabsView.swift */,
 			);
-			path = ViewController;
+			path = AddNewTask;
 			sourceTree = "<group>";
 		};
 		1180113C2C89E74F00D5376B /* CoreData */ = {
@@ -123,6 +117,28 @@
 				1180113D2C89E7A300D5376B /* CoreManager.swift */,
 			);
 			path = CoreData;
+			sourceTree = "<group>";
+		};
+		11BF1E3D2C8F643700032B50 /* ToDoList */ = {
+			isa = PBXGroup;
+			children = (
+				11BF1E3E2C8F647800032B50 /* View */,
+				118011262C87329600D5376B /* ToDoListInteractor.swift */,
+				118011222C87323E00D5376B /* ToDoListPresenter.swift */,
+				1180112A2C87357900D5376B /* ToDoEntity.swift */,
+				118011282C8733AA00D5376B /* ToDoListRouter.swift */,
+			);
+			path = ToDoList;
+			sourceTree = "<group>";
+		};
+		11BF1E3E2C8F647800032B50 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				11BF1E3B2C8F255300032B50 /* FilterView.swift */,
+				118011312C87996B00D5376B /* ToDoItemCell.swift */,
+				1180110E2C872C0100D5376B /* ToDoListVC.swift */,
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -208,7 +224,7 @@
 				1180110B2C872C0100D5376B /* AppDelegate.swift in Sources */,
 				1180110D2C872C0100D5376B /* SceneDelegate.swift in Sources */,
 				118011292C8733AA00D5376B /* ToDoListRouter.swift in Sources */,
-				11BF1E3C2C8F255300032B50 /* TaskTabsView.swift in Sources */,
+				11BF1E3C2C8F255300032B50 /* FilterView.swift in Sources */,
 				118011232C87323E00D5376B /* ToDoListPresenter.swift in Sources */,
 				118011322C87996B00D5376B /* ToDoItemCell.swift in Sources */,
 				1180112B2C87357900D5376B /* ToDoEntity.swift in Sources */,

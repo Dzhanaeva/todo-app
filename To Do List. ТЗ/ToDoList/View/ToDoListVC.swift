@@ -23,20 +23,27 @@ class ToDoListVC: UIViewController, ToDoListVCProtocol, FilterViewDelegate {
             setupFetchedResultsController()
         }
     }
+    
     private let filterView = FilterView()
-    
     private var fetchedResultsController: NSFetchedResultsController<Tasks>!
-    
-    enum TaskFilter {
-        case all
-        case open
-        case closed
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .background
-        
+        setupDependencies()
+        setupUI()
+        setupConstraints()
+        setupFetchedResultsController()
+        setupNotifications()
+    
+    }
+    
+    
+    @objc private func didDeleteAllTasks() {
+        setupFetchedResultsController()
+    }
+    
+    private func setupDependencies() {
         let router = ToDoListRouter()
         let presenter = ToDoListPresenter()
         let interactor = ToDoListInteractor()
@@ -50,17 +57,16 @@ class ToDoListVC: UIViewController, ToDoListVCProtocol, FilterViewDelegate {
         presenter.interactor = interactor
         router.viewController = self
         presenter.viewDidLoad()
-        
-        view.addSubviews(headLabel, dateLabel, addTaskBtn, filterView, taskCollectionView)
-        setupContraints()
-        setupFetchedResultsController()
-        
+    }
+    
+    private func setupUI() {
+         view.addSubviews(headLabel, dateLabel, addTaskBtn, filterView, taskCollectionView)
+         filterView.delegate = self
+         filterView.translatesAutoresizingMaskIntoConstraints = false
+     }
+    
+    private func setupNotifications() {
         NotificationCenter.default.addObserver(self, selector: #selector(didAddNewTask), name: .didAddNewTask, object: nil)
-        
-        filterView.delegate = self
-        filterView.translatesAutoresizingMaskIntoConstraints = false
-
-        
     }
     
     func filterView(_ filterView: FilterView, didSelectFilter filter: FilterView.TaskFilter) {
@@ -68,6 +74,32 @@ class ToDoListVC: UIViewController, ToDoListVCProtocol, FilterViewDelegate {
         
     }
 
+    // MARK: - Констрейнты
+    private func setupConstraints() {
+        NSLayoutConstraint.activate([
+            headLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            headLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5),
+            
+            dateLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            dateLabel.topAnchor.constraint(equalTo: headLabel.bottomAnchor, constant: 2),
+            
+            addTaskBtn.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            addTaskBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5),
+            addTaskBtn.heightAnchor.constraint(equalToConstant: 40),
+            addTaskBtn.widthAnchor.constraint(equalToConstant: 125),
+            
+            filterView.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 10),
+              filterView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+              filterView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+              filterView.heightAnchor.constraint(equalToConstant: 40),
+
+            taskCollectionView.topAnchor.constraint(equalTo: filterView.bottomAnchor, constant: 20),
+            taskCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            taskCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            taskCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+        ])
+    }
     
     //MARK: - UI
     
@@ -126,12 +158,8 @@ class ToDoListVC: UIViewController, ToDoListVCProtocol, FilterViewDelegate {
     
         
 
+    //MARK: - Actions
 
-
-    
-    
-    //MARK: - Данные
-    
     @objc func addNewTask() {
         presenter.didTapNewTaskBtn()
     }
@@ -140,6 +168,10 @@ class ToDoListVC: UIViewController, ToDoListVCProtocol, FilterViewDelegate {
         setupFetchedResultsController()
     }
     
+    
+    //MARK: - Data
+    
+
     private func getTasksCount(predicate: NSPredicate?) -> Int {
         let fetchRequest: NSFetchRequest<Tasks> = Tasks.fetchRequest()
         fetchRequest.predicate = predicate
@@ -180,57 +212,14 @@ class ToDoListVC: UIViewController, ToDoListVCProtocol, FilterViewDelegate {
         }
     }
     
-    @objc private func showAllTasks() {
-        currentFilter = .all
-        setupFetchedResultsController()
-    }
-    
-    @objc private func showOpenTasks() {
-        currentFilter = .open
-        setupFetchedResultsController()
-    }
-    
-    @objc private func showClosedTasks() {
-        currentFilter = .closed
-        setupFetchedResultsController()
-    }
-    
+
     func reloadData() {
         taskCollectionView.reloadData()
         filterView.allCount = getTasksCount(predicate: nil)
         filterView.openCount = getTasksCount(predicate: NSPredicate(format: "completed == NO"))
         filterView.closedCount = getTasksCount(predicate: NSPredicate(format: "completed == YES"))
     }
-    
-    
-    // MARK: - Констрейнты
-    private func setupContraints() {
-        NSLayoutConstraint.activate([
-            headLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            headLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5),
-            
-            dateLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            dateLabel.topAnchor.constraint(equalTo: headLabel.bottomAnchor, constant: 2),
-            
-            addTaskBtn.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            addTaskBtn.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 5),
-            addTaskBtn.heightAnchor.constraint(equalToConstant: 40),
-            addTaskBtn.widthAnchor.constraint(equalToConstant: 125),
-            
-            filterView.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 10),
-              filterView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-              filterView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-              filterView.heightAnchor.constraint(equalToConstant: 40),
 
-            taskCollectionView.topAnchor.constraint(equalTo: filterView.bottomAnchor, constant: 20),
-            taskCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            taskCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            taskCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            
-            
-            
-        ])
-    }
 }
     
 
@@ -239,8 +228,7 @@ class ToDoListVC: UIViewController, ToDoListVCProtocol, FilterViewDelegate {
 
 extension ToDoListVC: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        print(items.count, "в items")
-//        print(fetchedResultsController.fetchedObjects?.count, "core data")
+
         return fetchedResultsController.fetchedObjects?.count ?? 0
        
     }
@@ -249,8 +237,6 @@ extension ToDoListVC: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ToDoItemCell.reuseId, for: indexPath) as! ToDoItemCell
         let task = fetchedResultsController.object(at: indexPath)
         cell.configure(with: task)
-        
-        print(task, "задачи")
         return cell
         }
         
@@ -259,14 +245,19 @@ extension ToDoListVC: UICollectionViewDataSource {
 
 extension ToDoListVC: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-           let width = collectionView.frame.width - 32
+        let width = collectionView.frame.width - 32
         let task = fetchedResultsController.object(at: indexPath)
-           let autoCell = ToDoItemCell(frame: CGRect(x: 0, y: 0, width: width, height: 100))
+        
+        let autoCell = ToDoItemCell(frame: CGRect(x: 0, y: 0, width: width, height: 100))
         autoCell.configure(with: task)
-           autoCell.layoutIfNeeded()
-           let size = autoCell.contentView.systemLayoutSizeFitting(CGSize(width: width, height: UIView.layoutFittingCompressedSize.height))
-           return CGSize(width: width, height: size.height)
-       }
+        autoCell.layoutIfNeeded()
+        
+        let targetSize = CGSize(width: width, height: UIView.layoutFittingCompressedSize.height)
+        let size = autoCell.contentView.systemLayoutSizeFitting(targetSize, withHorizontalFittingPriority: .required, verticalFittingPriority: .fittingSizeLevel)
+        
+        
+        return CGSize(width: width, height: size.height)
+    }
     
 }
 
@@ -284,9 +275,6 @@ extension ToDoListVC: NSFetchedResultsControllerDelegate {
     }
 }
 
-extension Notification.Name {
-    static let didAddNewTask = Notification.Name("didAddNewTask")
-}
 
 
 

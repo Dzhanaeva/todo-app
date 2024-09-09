@@ -16,3 +16,6 @@ extension UIView {
 }
 
 
+extension Notification.Name {
+    static let didAddNewTask = Notification.Name("didAddNewTask")
+}
