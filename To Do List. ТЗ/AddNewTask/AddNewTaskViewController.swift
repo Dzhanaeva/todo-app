@@ -38,6 +38,7 @@ class AddNewTaskViewController: UIViewController, AddNewTaskViewControllerProtoc
         presenter.view = self
         presenter.interactor = interactor
         router.viewController = self
+        interactor.task = task
         presenter.viewDidLoad()
         
         
@@ -83,7 +84,7 @@ class AddNewTaskViewController: UIViewController, AddNewTaskViewControllerProtoc
     
     lazy var tasksContainerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemGray5
+        view.backgroundColor = .systemGray6
         view.layer.cornerRadius = 10
         view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tasksTextView)
@@ -93,12 +94,13 @@ class AddNewTaskViewController: UIViewController, AddNewTaskViewControllerProtoc
     
     lazy var categoryContainerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemGray5
+        view.backgroundColor = .systemGray6
         view.layer.cornerRadius = 10
         view.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(categoryTextField)
         return view
     }()
+    
     @objc func textViewDidChange(notification: NSNotification) {
         if let textView = notification.object as? UITextView {
             tasksPlaceholderLabel.isHidden = !textView.text.isEmpty

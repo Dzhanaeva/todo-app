@@ -7,11 +7,8 @@
 
 import UIKit
 
-protocol ToDoItemCellProtocol: AnyObject {
-    
-}
 
-class ToDoItemCell: UICollectionViewCell, ToDoItemCellProtocol {
+class ToDoItemCell: UICollectionViewCell {
         
     var presenter: ToDoListPresenterProtocol!
     var router: TodoListRouterProtocol!
@@ -35,16 +32,14 @@ class ToDoItemCell: UICollectionViewCell, ToDoItemCellProtocol {
         }(UILabel())
     
         lazy var checkmark: UIButton = {
-            $0.heightAnchor.constraint(equalToConstant: 27).isActive = true
-            $0.widthAnchor.constraint(equalToConstant: 27).isActive = true
             $0.translatesAutoresizingMaskIntoConstraints = false
             $0.addTarget(self, action: #selector(didTapCheckButton), for: .touchUpInside)
             return $0
         }(UIButton(type: .system))
     
     lazy var separator: UIView = {
-        $0.backgroundColor = .tintGray
-        $0.heightAnchor.constraint(equalToConstant: 2).isActive = true
+        $0.backgroundColor = .systemGray6
+        $0.heightAnchor.constraint(equalToConstant: 1).isActive = true
         $0.translatesAutoresizingMaskIntoConstraints = false
         return $0
     }(UIView())
@@ -56,6 +51,22 @@ class ToDoItemCell: UICollectionViewCell, ToDoItemCellProtocol {
         $0.numberOfLines = 0
         return $0
     }(UILabel())
+    
+    lazy var horizontalStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [toDoLabel, checkmark])
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+    
+    lazy var verticalStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [horizontalStackView, categoryLabel, separator, dateWhenCompleteLabel])
+        stackView.axis = .vertical
+        stackView.spacing = 10
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
     
     @objc func didTapCheckButton() {
         presenter.didTapCheckButton(for: task)
@@ -73,9 +84,13 @@ class ToDoItemCell: UICollectionViewCell, ToDoItemCellProtocol {
             formatter.timeStyle = .short
             formatter.dateFormat = "h:mm a"
             dateWhenCompleteLabel.text = "Today \(formatter.string(from: dateComplete))"
-            
+            separator.isHidden = false
+            dateWhenCompleteLabel.isHidden = false
         } else {
             dateWhenCompleteLabel.text = ""
+            separator.isHidden = true
+            dateWhenCompleteLabel.isHidden = true
+
         }
         router.updateCheckButton(for: task)
         
@@ -85,7 +100,7 @@ class ToDoItemCell: UICollectionViewCell, ToDoItemCellProtocol {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        contentView.addSubviews(toDoLabel, categoryLabel, checkmark, dateWhenCompleteLabel, separator)
+        contentView.addSubviews(verticalStackView)
         
         let router = ToDoListRouter()
         let presenter = ToDoListPresenter()
@@ -135,26 +150,15 @@ class ToDoItemCell: UICollectionViewCell, ToDoItemCellProtocol {
         NSLayoutConstraint.activate([
             
             
-            checkmark.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            checkmark.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            verticalStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            verticalStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
+            verticalStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
+            verticalStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
             
-            toDoLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            toDoLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
-            toDoLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -45),
-
-            categoryLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            categoryLabel.topAnchor.constraint(equalTo: toDoLabel.bottomAnchor, constant: 5),
-            categoryLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -45),
-            
-            separator.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            separator.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20),
-            
-            
-            dateWhenCompleteLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            dateWhenCompleteLabel.topAnchor.constraint(equalTo: categoryLabel.bottomAnchor, constant: 5),
-            dateWhenCompleteLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
-        
+            checkmark.widthAnchor.constraint(equalToConstant: 40),
+            checkmark.heightAnchor.constraint(equalToConstant: 40),
         ])
+        
 
     }
     

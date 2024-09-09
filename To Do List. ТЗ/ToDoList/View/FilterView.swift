@@ -15,7 +15,9 @@ class FilterView: UIView {
     
     weak var delegate: FilterViewDelegate?
     
-    private let stackView = UIStackView()
+    private let tabStackView = UIStackView()
+    private let stackViewOne = UIStackView()
+    private let stackViewTwo = UIStackView()
     private let allButton = FilterButton(title: "All")
     private let openButton = FilterButton(title: "Open")
     private let closedButton = FilterButton(title: "Closed")
@@ -26,6 +28,21 @@ class FilterView: UIView {
         view.layer.cornerRadius = 2
         view.heightAnchor.constraint(equalToConstant: 20).isActive = true
         view.widthAnchor.constraint(equalToConstant: 2).isActive = true
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.preservesSuperviewLayoutMargins = true
+        view.layoutMargins = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+        
+        return view
+    }()
+    
+    private var leftSpacer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private var rightSpacer: UIView = {
+        let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -70,25 +87,40 @@ class FilterView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
+
     private func setupView() {
-        stackView.axis = .horizontal
-        stackView.distribution = .equalSpacing
-        stackView.alignment = .center
-        stackView.spacing = 40
-        stackView.translatesAutoresizingMaskIntoConstraints = false
+        tabStackView.axis = .horizontal
+        tabStackView.distribution = .equalSpacing
+        tabStackView.alignment = .center
+        tabStackView.spacing = 10
+        tabStackView.translatesAutoresizingMaskIntoConstraints = false
         
-        stackView.addArrangedSubview(allButton)
-        stackView.addArrangedSubview(separator)
-        stackView.addArrangedSubview(openButton)
-        stackView.addArrangedSubview(closedButton)
+        stackViewOne.axis = .horizontal
+        stackViewOne.distribution = .equalSpacing
+        stackViewOne.spacing = 40
+        stackViewOne.alignment = .center
+        stackViewOne.addArrangedSubview(allButton)
+        stackViewOne.addArrangedSubview(separator)
         
-        addSubview(stackView)
+        stackViewTwo.axis = .horizontal
+        stackViewTwo.distribution = .equalSpacing
+        stackViewTwo.spacing = 40
+        stackViewTwo.alignment = .center
+        stackViewTwo.addArrangedSubview(openButton)
+        stackViewTwo.addArrangedSubview(closedButton)
+        
+        
+        tabStackView.addArrangedSubview(stackViewOne)
+        tabStackView.addArrangedSubview(stackViewTwo)
+        
+        addSubview(tabStackView)
+
         
         NSLayoutConstraint.activate([
-            stackView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            stackView.topAnchor.constraint(equalTo: topAnchor),
-            stackView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            separator.trailingAnchor.constraint(equalTo: openButton.leadingAnchor, constant: 1),
+            tabStackView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            tabStackView.topAnchor.constraint(equalTo: topAnchor),
+            tabStackView.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
         
         allButton.addTarget(self, action: #selector(allButtonTapped), for: .touchUpInside)

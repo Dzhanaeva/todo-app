@@ -20,12 +20,13 @@ class AddNewTaskInteractor: AddNewTaskInteractorProtocol {
     var task: Tasks?
     
     func saveTask(todo: String, category: String?, date: Date?) {
-        if let task = task {
-            task.updateTask(newToDo: todo, newCategory: category, newDate: date)
-        } else {
+        if task == nil {
             manager.addNewTask(todo: todo, category: category, date: date)
+        } else {
+            task?.updateTask(newToDo: todo, newCategory: category, newDate: date)
+            NotificationCenter.default.post(name: .didAddNewTask, object: nil)
         }
-        NotificationCenter.default.post(name: .didAddNewTask, object: nil)
+        
     }
     
     func fetchTask() {
